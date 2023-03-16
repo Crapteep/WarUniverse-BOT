@@ -27,8 +27,9 @@ This bot, for now, allows you to collect various types of minerals and kill alie
 <p></p>
 <sup align = "left"> 
 
-  To use the bot you need a modded version of the game
+  *To use the bot you need a modded version of the game*
 </sup>
+
 <p></p>
 
 ## GUI design
