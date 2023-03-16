@@ -25,14 +25,21 @@ The project uses the Flet library, which enables developers to easily build real
 This bot, for now, allows you to collect various types of minerals and kill aliens. However, the system of collecting as well as killing is constantly being improved in order to achieve the highest possible efficiency.
 
 <p></p>
-  *To use the bot you need a modded version of the game.*
+  To use the bot you need a modded version of the game.
 <p></p>
 
 ## GUI design
 This GUI is still under development and there will be better versions in the future.
 
  - main view of the application window
+
+ ![App Screenshot](https://github.com/Crapteep/WarUniverse-BOT/blob/master/screenshots/main_view.png)
+
+ 
  - bot settings view
+
+ ![App Screenshot](https://github.com/Crapteep/WarUniverse-BOT/blob/master/screenshots/set_bot_view.png)
+
  - 
 
 ## Features currently implemented
