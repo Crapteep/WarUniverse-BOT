@@ -32,13 +32,12 @@ This bot, for now, allows you to collect various types of minerals and kill alie
 This GUI is still under development and there will be better versions in the future.
 
  - main view of the application window
-
- ![App Screenshot](https://github.com/Crapteep/WarUniverse-BOT/blob/master/screenshots/main_view.png)
-
+ - 
+<img src="https://github.com/Crapteep/WarUniverse-BOT/blob/master/screenshots/main_view.png" width=50% height=50%>
  
  - bot settings view
 
- ![App Screenshot](https://github.com/Crapteep/WarUniverse-BOT/blob/master/screenshots/set_bot_view.png)
+<img src="https://github.com/Crapteep/WarUniverse-BOT/blob/master/screenshots/set_bot_view.png" width=50% height=50%>
 
  - 
 
