@@ -25,7 +25,7 @@ The project uses the Flet library, which enables developers to easily build real
 This bot, for now, allows you to collect various types of minerals and kill aliens. However, the system of collecting as well as killing is constantly being improved in order to achieve the highest possible efficiency.
 
 <p></p>
-  *To use the bot you need a modded version of the game.
+  *To use the bot you need a modded version of the game.*
 <p></p>
 
 ## GUI design
