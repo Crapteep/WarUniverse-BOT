@@ -25,14 +25,20 @@ The project uses the Flet library, which enables developers to easily build real
 This bot, for now, allows you to collect various types of minerals and kill aliens. However, the system of collecting as well as killing is constantly being improved in order to achieve the highest possible efficiency.
 
 ## GUI design
-    .
-    .
-    .
+ - 
+ - 
+ - 
 
 ## Features currently implemented
-    . the ability to choose different types of boxes to be collected by the bot
-    . the ability to enable killing of aliens
-    . flying to different areas of the map
+ - the ability to choose different types of boxes to be collected by the bot
+ 
+ ![App Screenshot](https://github.com/Crapteep/WarUniverse-BOT/blob/master/screenshots/select_items.png)
+
+ - the ability to enable killing of aliens
+ 
+ ![App Screenshot](https://github.com/Crapteep/WarUniverse-BOT/blob/master/screenshots/kill_aliens_opt.png)
+ 
+ - flying to different areas of the map
 
 ## Ideas to develop
 - adding a new feature that allows you to escape from the enemy
