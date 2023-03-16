@@ -44,13 +44,7 @@ This GUI is still under development and there will be better versions in the fut
 
 ## Features currently implemented
  - the ability to choose different types of boxes to be collected by the bot
- 
- ![App Screenshot](https://github.com/Crapteep/WarUniverse-BOT/blob/master/screenshots/select_items.png)
-
  - the ability to enable killing of aliens
- 
- ![App Screenshot](https://github.com/Crapteep/WarUniverse-BOT/blob/master/screenshots/kill_aliens_opt.png)
- 
  - flying to different areas of the map
 
 ## Ideas to develop
