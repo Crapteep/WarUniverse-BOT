@@ -12,8 +12,8 @@ A simple bot for the game War Universe created using the Python language.
 
 ## List of contents
 1. [Project description](#project-description)
-2. [More about `config.txt` file](#GUI-design)
-3. [How to open project](#How-to-open-project)
+2. [GUI design](#GUI-design)
+3. [Features currently implemented](#Features-currently-implemented)
 4. [Ideas to develop](#Ideas-to-develop)
 
 ## Project description
