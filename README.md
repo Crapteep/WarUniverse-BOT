@@ -2,7 +2,7 @@
 
 <sup align = "left"> 
   
-   *Status: The project is is no longer being developed*
+   *Status: The project is still being developed*
   
 </sup>
 
