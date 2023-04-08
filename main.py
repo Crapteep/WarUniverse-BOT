@@ -4,7 +4,7 @@ from app import WarUniverseApp
 
 
 def main(page: ft.Page):
-    page.title = "WarUniverseBOT"
+    page.title = "WarUniverse BOT"
     page.horizontal_alignment = "center" 
     page.window_width = 720        # window's width is 200 px
     page.window_height = 600       # window's height is 200 px
