@@ -55,8 +55,8 @@ def findContours(colors_sought: dict, region: tuple, retr_contours=cv2.RETR_TREE
     return contours, grabed_region_RGB
 
 
-def setScreenRegion(region_position):
-    x, y, width, height = region_position
+def setScreenRegion(region_rect):
+    x, y, width, height = region_rect
     region = {"left": x, "top": y,
               "width": width, "height": height}
     return region
@@ -116,7 +116,7 @@ def getShipPos(app_window) -> tuple:
         has a center point. The function calculates the center point by adding half of the window's
         width to the left coordinate, and half of the window's height to the top coordinate.
     """
-    return app_window.left + app_window.width/2, app_window.top + app_window.height/2
+    return (app_window.left + app_window.width/2, app_window.top + app_window.height/2)
 
 
 def isHandCursor() -> bool:
@@ -209,18 +209,54 @@ def drawContours(grabed_view, contours):
     cv2.imshow("Template matching", grabed_view)
     if cv2.waitKey(25) & 0xFF == 27:
         cv2.destroyAllWindows()
-
-
-def searchEnemy(app_region):
-    enemy_contour, _ = findContours(colors_sought={RGB_SOLAR: None, RGB_VEGA: None}, region=app_region, retr_contours=cv2.RETR_EXTERNAL)
-    if enemy_contour:
-        return True
-    else:
-        return False
         
     
-def playerPosition(minimap_region):
-    player_contour, grabed_view = findContours(colors_sought={None: [RGB_PLAYER_POINT_MIN, RGB_PLAYER_POINT_MAX]}, region=minimap_region)
-    drawContours(grabed_view=grabed_view, contours=player_contour)
-    if player_contour:
-        return player_contour
+def minimapPlayerPosition(minimap_region):
+    minimap_player_pos = None
+
+    while minimap_player_pos == None:
+        player_contour, grabed_view = findContours(colors_sought={None: [RGB_PLAYER_POINT_MIN, RGB_PLAYER_POINT_MAX]}, region=minimap_region)
+        for contour in player_contour:
+            minimap_player_pos = calcElementCenter(calcContourPosition(contour, minimap_region))
+    return minimap_player_pos
+  
+
+def calcDistance(A: tuple, B: tuple) -> float:
+    """
+    Calculates the distance between the centers of two geometric elements represented as tuples.
+
+    Args:
+    A (tuple): A tuple representing the first geometric element (x, y).
+    B (tuple): A tuple representing the second geometric element (x, y).
+
+    Returns:
+    float: The distance between the centers of the two geometric elements.
+
+    Example:
+    calcDistance((0, 0, 10, 10), (5, 5, 15, 15))
+    Output: 7.0710678118654755
+    """
+
+    distance = sqrt((A[0] - B[0])**2 + (A[1] - B[1])**2)
+    return distance
+
+
+def calcElementCenter(element):
+    (x, y, w, h) = element
+    return (x + (w/2), y + (h/2))
+
+
+def findClosestTeleport(minimap_region):
+    player_pos = minimapPlayerPosition(minimap_region)
+    teleport_contours, grabed_view = findContours(colors_sought={RGB_TELEPORT: None}, region=minimap_region)
+
+    distance = 1000
+    teleport_pos = None
+    for contour in teleport_contours:
+        contour_pos = calcElementCenter(calcContourPosition(contour, minimap_region))
+
+        new_distance = calcDistance(player_pos, contour_pos)
+        if new_distance <= distance:
+            distance = new_distance
+            teleport_pos = contour_pos
+    return teleport_pos, player_pos, distance

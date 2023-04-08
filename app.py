@@ -19,12 +19,14 @@ class WarUniverseApp(ft.UserControl):
         self.settings_view = Settings(self.page)
         self.stats_view = Stats(self.page)
         self.app_region = None
-        self.minimap_pos = []
+        self.minimap_rect = None
         self.selected_boxes = {}
         self.selected_aliens = {RGB_HYDRO: None}
         self.blocked_area = []
         self.shooting = False
         self.is_clicked = False
+        self.safe_zone = True
+        self.enemy = False
 
     def build(self):
         self.page.banner = ft.Banner(bgcolor=ft.colors.AMBER_100,
@@ -194,74 +196,33 @@ class WarUniverseApp(ft.UserControl):
     def on_keyboard(self, e: ft.KeyboardEvent):
         if e.key == "Q":
             self.on_click_stop()
- 
 
-    def on_click_stop(self, e):
+        # if e.key == "E":
+        #     self.enemy = True
+
+    def on_click_stop(self):
         self.start_btn.disabled = False
         self.page.update()
 
 
-    def on_click_start(self, e):
-        self.blocked_area.clear()       #zrobić tak, ze jak dane beda wczytanie to zeby wczytywała sie od razu blocked area
-                                        #jesli bedzie miała elementy to zeby juz nie liczyło ich
-        #zrobić zeby sprawdzało te rzeczy wszystkie
-        print(self.set_bot_view.blocked_area_points)
-        
+    def on_click_start(self,e):
+        self.run()
 
-        self.start_btn.disabled = True
-        self.page.update()
+            
+    def setup(self):
+        self.getAppRegion()
+        self.check_selected_boxes()
 
+        self.blocked_area.clear()
         for item in self.set_bot_view.blocked_area_points:
             val = calcElementPosition(item[0], item[1])
             self.blocked_area.append(val)
 
-        self.getAppRegion()
-        self.check_selected_boxes()
-        self.minimap_pos = calcElementPosition(self.set_bot_view.minimap_points[0][0], self.set_bot_view.minimap_points[0][1])
+        self.minimap_rect = calcElementPosition(self.set_bot_view.minimap_points[0][0], self.set_bot_view.minimap_points[0][1])
 
-        time_start = time.time()
-        while self.start_btn.disabled:
-            minimap_interval = time.time() - time_start
+        self.start_btn.disabled = True
+        self.page.update()
 
-
-            # playerPosition(setScreenRegion(self.minimap_pos))
-            # is_enemy = searchEnemy(self.app_region)
-            # if is_enemy:
-            #     self.safeEscape()
-            #     pass
-                #zrobić uciekanie do portu
-            # print(is_enemy)
-
-
-
-
-            if self.selected_boxes:
-                if self.page.banner.open:
-                    self.page.banner.open = False
-                    self.page.update()
-
-                self.collectItems(minimap_interval)
-
-            else:
-                if not self.page.banner.open:
-                    self.page.banner.content = ft.Text("Opps, please select the type of collection boxes in [Set bot]!")
-                    self.page.banner.open = True
-                    self.page.update()
-
-            if self.set_bot_view.kill_alien:
-                is_enemy = searchEnemy(self.app_region)
-                if not is_enemy:
-                    self.killAliens()
-
-
-            if minimap_interval >= TIME_BETWEEN_MINIMAP_CLICK:
-                time_start = time.time()
-            if keyboard.is_pressed('q'):
-                self.on_click_stop(e)
-
-            # time.sleep(1/60)
-            self.page.update()
-            
 
     def close_notification_banner(self,e):
         self.page.banner.open = False
@@ -281,8 +242,6 @@ class WarUniverseApp(ft.UserControl):
                 self.app_region = setScreenRegion(calcContourPosition(max(contours, key=cv2.contourArea), self.window_region))
 
         
-
-
 
     def collectItems(self, minimap_interval):
         
@@ -311,9 +270,39 @@ class WarUniverseApp(ft.UserControl):
         else:
             if minimap_interval >= TIME_BETWEEN_MINIMAP_CLICK:
                 # print('klikam na mapie')
-                (x, y, w, h) = self.minimap_pos
+                (x, y, w, h) = self.minimap_rect
                 gui.moveTo(randint(x, w+x), randint(y, h+y))
                 gui.click()
+
+    def collectItemsv2(self):
+        contours, _ = findContours(colors_sought=self.selected_boxes, region=self.app_region)
+
+        ship_pos = getShipPos(self.app_window)
+
+        min_distance = self.app_window.width
+        if contours:
+            for contour in contours:
+                contour_pos = calcElementCenter(calcContourPosition(contour, self.app_region))
+
+                distance = calcDistance(ship_pos, contour_pos)
+
+                if distance <= min_distance:
+                    min_distance = distance
+                    closest_contour = contour_pos
+            
+            print(min_distance)
+        else:
+            pass
+
+
+
+
+
+
+
+
+
+
 
 
     def killAliens(self):
@@ -344,5 +333,88 @@ class WarUniverseApp(ft.UserControl):
                     self.shooting = False
                 self.is_clicked = False
 
+
     def safeEscape(self):
-        pass
+        print('robi sie safe escape')
+        teleport_pos, player_pos, distance = findClosestTeleport(setScreenRegion(self.minimap_rect))
+        click_pos = teleport_pos[0] + teleport_pos[2]/2, teleport_pos[1] + teleport_pos[3]/2
+        gui.moveTo(click_pos)
+        gui.click(click_pos, duration=0.1)
+        is_safe = False
+        while not is_safe:
+            #zmienianie konfy jak będzie hp schodziło
+            distance = calcDistance(minimapPlayerPosition(setScreenRegion(self.minimap_rect)), teleport_pos)
+            if distance <= MIN_SAFE_ZONE_DISTANCE:
+                while True:
+                    distance = calcDistance(minimapPlayerPosition(setScreenRegion(self.minimap_rect)), teleport_pos)
+                    if distance >= MIN_SAFE_ZONE_DISTANCE:
+                        gui.press('j')
+                        is_safe = True
+                        break
+                    else:
+                        gui.press('j')
+                        time.sleep(0.5)
+        
+        time.sleep(self.set_bot_view.time_after_escape)
+
+                    
+
+
+    def safeZoneUpdate(self):
+        _, _, distance = findClosestTeleport(setScreenRegion(self.minimap_rect))
+        if distance > MIN_SAFE_ZONE_DISTANCE:
+            self.safe_zone = False
+        else:
+            self.safe_zone = True
+
+
+    def enemyUpdate(self):
+        enemy_contour, _ = findContours(colors_sought={RGB_SOLAR: None, RGB_ORION: None}, region=self.app_region, retr_contours=cv2.RETR_EXTERNAL)
+        if enemy_contour:
+            self.enemy = True
+        else:
+            self.enemy = False
+
+
+    def update(self):
+        self.safeZoneUpdate()
+        self.enemyUpdate()
+
+
+    def farming(self, minimap_interval):
+        if self.selected_boxes:
+            # self.collectItems(minimap_interval)
+            self.collectItemsv2()
+
+        if self.set_bot_view.kill_alien:
+            self.killAliens()
+
+        if minimap_interval >= TIME_BETWEEN_MINIMAP_CLICK:
+            time_start = time.time()
+
+
+    def run(self):
+        self.setup()
+
+        time_start = time.time()
+        #main bot loop
+        while self.start_btn.disabled:
+            minimap_interval = time.time() - time_start
+            
+            if keyboard.is_pressed('e'):
+                self.enemy = True
+            elif keyboard.is_pressed('q'):
+                self.on_click_stop()
+
+
+            if not self.safe_zone and self.enemy:
+                self.safeEscape()
+            elif self.safe_zone and self.enemy:
+                time.sleep(5)
+            else:
+                self.farming(minimap_interval)
+
+            self.update()
+            self.page.update()
+            time.sleep(1/60)
+            
